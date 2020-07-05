@@ -5,7 +5,8 @@ import {
 	Selection,
 	commands,
 	ExtensionContext,
-	TextEditor
+	TextEditor,
+	TextLine
 } from 'vscode';
 
 import camelCase from 'lodash.camelcase';
@@ -21,20 +22,20 @@ export function deactivate() {
 }
 
 function toggle() {
-	const editor = window.activeTextEditor;
-	const document = editor?.document;
-	const pattern = getPattern(editor);
+	const editor: TextEditor = window.activeTextEditor!;
+	const document = editor.document;
+	const pattern: RegExp = getPattern(editor);
 	const changes: { selection: Selection, replacement: string }[] = [];
 
-	editor?.selections.forEach(selection => {
-		let current = selection;
-		let selectedText = document.getText(selection) || '';
+	editor.selections.forEach(selection => {
+		let current: Selection = selection;
+		let selectedText: string = document.getText(selection) || '';
 
 		if (!selectedText) {
 			// there is no text selected, only the caret
-			const lineAt = document.lineAt(selection.start.line);
-			const text = lineAt.text;
-			let leftPosition = selection.start.character;
+			const lineAt: TextLine = document.lineAt(selection.start.line);
+			const text: string = lineAt.text;
+			let leftPosition: number = selection.start.character;
 			// collect characters on the left side of the caret
 			while (leftPosition >= 0 && pattern.test(text[leftPosition])) {
 				selectedText = `${text[leftPosition] || ''}${selectedText}`;
@@ -43,14 +44,14 @@ function toggle() {
 			// collect characters on the right side of the caret
 			// starting position (selection.start.character) is included in the
 			// previous iteration, hence right position is incremented here
-			let rightPosition = selection.start.character + 1;
+			let rightPosition: number = selection.start.character + 1;
 			while (rightPosition < text.length && pattern.test(text[rightPosition])) {
 				selectedText += text[rightPosition];
 				rightPosition += 1;
 			}
 
-			const start = new Position(selection.start.line, leftPosition + 1);
-			const end = new Position(selection.start.line, rightPosition);
+			const start: Position = new Position(selection.start.line, leftPosition + 1);
+			const end: Position = new Position(selection.start.line, rightPosition);
 			current = new Selection(start, end);
 		}
 
@@ -60,15 +61,15 @@ function toggle() {
 		});
 	})
 
-	editor?.edit(builder => {
+	editor.edit(builder => {
 		changes.forEach(({ selection, replacement }) => {
 			builder.replace(selection, replacement);
 		});
 	});
 };
 
-const isCamelCase = (string: string) => camelCase(string) === string;
-const isSnakeCase = (string: string) => snakeCase(string) === string;
+function isCamelCase(string: string) { return camelCase(string) === string; }
+function isSnakeCase(string: string) { return snakeCase(string) === string; }
 
 // 1. nocase -> camelCase
 // 2. camelCase -> snake_case
@@ -82,7 +83,7 @@ function nextCase(value: string) {
 }
 
 function getPattern(editor: TextEditor) {
-	const language = workspace.getConfiguration().get(`[${editor.document.languageId}]`) || {};
+	const language: any = workspace.getConfiguration().get(`[${editor.document.languageId}]`) || {};
 
 	return new RegExp(language['togglecase.pattern'] || workspace.getConfiguration('togglecase').get('pattern'));
 }
