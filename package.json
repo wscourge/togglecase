@@ -1,7 +1,7 @@
 {
 	"name": "togglecase",
 	"displayName": "ToggleCase",
-	"description": "Toggle selected string between camelCase, CapitalizedCamelCase, snake_case and kebab-case.",
+	"description": "Toggle selected string between camelCase, snake_case and kebab-case.",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.46.0"
