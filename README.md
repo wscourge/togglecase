@@ -1,65 +1,86 @@
-# togglecase README
+# ToggleCase
 
-This is the README for your extension "togglecase". After writing up a brief description, we recommend including the following sections.
+\!\[feature X\]\(images/singlereplace.gif\)
+
+Toggle case of the selected string:
+
+- <kbd>Ctrl+;</kbd> Linux
+- <kbd>⌘+;</kbd> MacOS
+
+in the following order:
+
+1. nocase -> camelCase
+2. camelCase -> CapitalizedCamelCase
+3. CapitalizedCamelCase -> snake_case
+4. snake_case -> kebab-case
+5. kebab-case -> camelCase
+
+If you wish to overwrite the default shortcut, search for `editor.togglecase`.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- Works with multi-select and multiple carets
+- Per `languageId` customization
 
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+\!\[feature X\]\(images/multireplace.gif\)
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+Only setting present (and configurable for different languages) is regexp of
+characters that can occur as **second and second last** in the variable name.
 
-For example:
+* `togglecase.pattern`: `"[0-9]|[a-z]|[A-Z]|_|-"`
 
-This extension contributes the following settings:
+with the following defaults:
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+* lowercase `a-z` letters
+* uppercase `A-Z` letters
+* digits `0-9`
+* hyphen `-`
+* underscore `_`
+
+Letters come from the english alphabet.
+
+Custom per-language configuration - let's assume that you're crazy enough to
+use `$` inside your variable names, for example `btc_$_price` (please don't).
+
+In that case, you could extend the default RegExp with an additional `|\$`:
+
+```json
+"configurationDefaults": {
+  "[javascript]": {
+    "togglecase.pattern": "[0-9]|[a-z]|[A-Z]|_|-|\$"
+  }
+```
+
+It might be useful for some other languages, hence it's configurable.
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+Toggle works only when caret is **at least on the third-last character of the targeted variable**.
 
-## Release Notes
+In the examples below, the `|` represents current carret(s).
 
-Users appreciate release notes as you update your extension.
+### Does not work
 
-### 1.0.0
+```
+{
+  "first_nam|e": "Jon",
+  "last_nam|e": "Doe",
+  "user_nam|e": "jondoe",
+  "phone_numbe|r": "555666777"
+}
+```
 
-Initial release of ...
+### Does work
 
-### 1.0.1
+```
+{
+  "first_na|me": "Jon",
+  "last_na|me": "Doe",
+  "user_na|me": "jondoe",
+  "phone_numb|er": "555666777"
+}
+```
 
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Fix for this behavior is welcome.
