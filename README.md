@@ -1,6 +1,6 @@
 # ToggleCase
 
-\!\[feature X\]\(images/singlereplace.gif\)
+![single-tooglecase](https://raw.githubusercontent.com/wscourge/togglecase/master/images/singlereplace.gif)
 
 Toggle case of the selected string:
 
@@ -22,7 +22,7 @@ If you wish to overwrite the default shortcut, search for `editor.togglecase`.
 - Works with multi-select and multiple carets
 - Per `languageId` customization
 
-\!\[feature X\]\(images/multireplace.gif\)
+![multi-tooglecase](https://raw.githubusercontent.com/wscourge/togglecase/master/images/multireplace.gif)
 
 ## Extension Settings
 
