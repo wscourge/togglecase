@@ -10,10 +10,9 @@ Toggle case of the selected string:
 in the following order:
 
 1. nocase -> camelCase
-2. camelCase -> CapitalizedCamelCase
-3. CapitalizedCamelCase -> snake_case
-4. snake_case -> kebab-case
-5. kebab-case -> camelCase
+2. camelCase -> snake_case
+3. snake_case -> kebab-case
+4. kebab-case -> camelCase
 
 If you wish to overwrite the default shortcut, search for `editor.togglecase`.
 
