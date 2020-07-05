@@ -4,12 +4,37 @@
 	"description": "Toggle selected string between camelCase, snake_case and kebab-case.",
 	"version": "0.0.1",
 	"publisher": "wscourge",
+	"author": {
+		"name": "Wiktor Plaga",
+		"email": "wscourge@gmail.com",
+		"url": "https://www.linkedin.com/in/wiktor-plaga-7a353a106/"
+	},
+	"homepage": "https://github.com/wscourge/togglecase/blob/master/README.md",
+	"license": "MIT",
+	"icon": "images/logo-256x256.png",
+	"galleryBanner": {
+		"color": "#F9F9F9",
+		"theme": "light"
+	},
+	"categories": [
+		"Formatters"
+	],
+	"keywords": [
+		"snake_case",
+		"camelCase",
+		"kebab-case",
+		"toggle"
+	],
+	"repository": {
+    "type": "git",
+    "url": "https://github.com/wscourge/togglecase.git"
+	},
+	"bugs": {
+    "url": "https://github.com/wscourge/togglecase/issues"
+	},
 	"engines": {
 		"vscode": "^1.46.0"
 	},
-	"categories": [
-		"Other"
-	],
 	"activationEvents": [
 		"onCommand:editor.togglecase"
 	],
