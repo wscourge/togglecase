@@ -11,10 +11,8 @@ import {
 import camelCase from 'lodash.camelcase';
 import snakeCase from 'lodash.snakecase';
 import kebabCase from 'lodash.kebabcase';
-import upperFirst from 'lodash.upperfirst';
 
 export function activate(context: ExtensionContext) {
-	// window.showInformationMessage('ToggleCase activated.');
 	context.subscriptions.push(commands.registerCommand('editor.togglecase', toggle));
 }
 
@@ -69,20 +67,17 @@ function toggle() {
 	});
 };
 
-const capitalizedCamelCase = (string: string) => upperFirst(camelCase(string));
 const isCamelCase = (string: string) => camelCase(string) === string;
 const isSnakeCase = (string: string) => snakeCase(string) === string;
-const isCapitalizedCamelCase = (string: string) => capitalizedCamelCase(string) === string;
 
-// 1. no-case -> camelCase
-// 2. camelCase -> CapitalizedCamelCase
-// 3. CapitalizedCamelCase -> snake_case
-// 4. snake_case -> kebab-case
-// 5. kebab-case -> camelCase
+// 1. nocase -> camelCase
+// 2. camelCase -> snake_case
+// 3. snake_case -> kebab-case
+// 4. kebab-case -> camelCase
 function nextCase(value: string) {
-	if (isCamelCase(value)) return capitalizedCamelCase(value);
-	if (isCapitalizedCamelCase(value)) return snakeCase(value);
+	if (isCamelCase(value)) return snakeCase(value);
 	if (isSnakeCase(value)) return kebabCase(value);
+	// nocase or kebab-case
 	return camelCase(value);
 }
 
