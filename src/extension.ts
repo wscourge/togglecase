@@ -1,27 +1,93 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import {
+	window,
+	workspace,
+	Position,
+	Selection,
+	commands,
+	ExtensionContext,
+	TextEditor
+} from 'vscode';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+import camelCase from 'lodash.camelcase';
+import snakeCase from 'lodash.snakecase';
+import kebabCase from 'lodash.kebabcase';
+import upperFirst from 'lodash.upperfirst';
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "togglecase" is now active!');
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('togglecase.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from ToggleCase!');
-	});
-
-	context.subscriptions.push(disposable);
+export function activate(context: ExtensionContext) {
+	// window.showInformationMessage('ToggleCase activated.');
+	context.subscriptions.push(commands.registerCommand('editor.togglecase', toggle));
 }
 
-// this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+	window.showInformationMessage('ToggleCase deactivated.');
+}
+
+function toggle() {
+	let editor = window.activeTextEditor;
+	let document = editor?.document;
+	const pattern = getPattern(editor);
+	const changes: { selection: Selection, replacement: string }[] = [];
+
+	editor?.selections.forEach(selection => {
+		let current = selection;
+		let selectedText = document.getText(selection) || '';
+		if (!selectedText) {
+			// there is no text selected, only the caret
+			const lineAt = document.lineAt(selection.start.line);
+			const text = lineAt.text;
+			let leftPosition = selection.start.character;
+			// collect characters on the left side of the caret
+			while (leftPosition >= 0 && pattern.test(text[leftPosition])) {
+				selectedText = `${text[leftPosition] || ''}${selectedText}`;
+				console.log('selectedText', selectedText);
+				leftPosition -= 1;
+			}
+			// collect characters on the right side of the caret
+			// starting position (selection.start.character) is included in the
+			// previous iteration, hence right position is incremented here
+			let rightPosition = selection.start.character + 1;
+			while (rightPosition < text.length && pattern.test(text[rightPosition])) {
+				selectedText += text[rightPosition];
+				rightPosition += 1;
+			}
+
+			const start = new Position(selection.start.line, leftPosition + 1);
+			const end = new Position(selection.start.line, rightPosition);
+			current = new Selection(start, end);
+		}
+
+		changes.push({
+			selection: current,
+			replacement: nextCase(selectedText.trim().replace(/^[0-9]/, ''))
+		});
+	})
+
+	editor?.edit(builder => {
+		changes.forEach(({ selection, replacement }) => {
+			builder.replace(selection, replacement);
+		});
+	});
+};
+
+const capitalizedCamelCase = (string: string) => upperFirst(camelCase(string));
+const isCamelCase = (string: string) => camelCase(string) === string;
+const isSnakeCase = (string: string) => snakeCase(string) === string;
+const isCapitalizedCamelCase = (string: string) => capitalizedCamelCase(string) === string;
+
+// 1. no-case -> camelCase
+// 2. camelCase -> CapitalizedCamelCase
+// 3. CapitalizedCamelCase -> snake_case
+// 4. snake_case -> kebab-case
+// 5. kebab-case -> camelCase
+function nextCase(value: string) {
+	if (isCamelCase(value)) return capitalizedCamelCase(value);
+	if (isCapitalizedCamelCase(value)) return snakeCase(value);
+	if (isSnakeCase(value)) return kebabCase(value);
+	return camelCase(value);
+}
+
+function getPattern(editor: TextEditor) {
+	const language = workspace.getConfiguration().get(`[${editor.document.languageId}]`) || {};
+
+	return new RegExp(language['togglecase.pattern'] || workspace.getConfiguration('togglecase').get('pattern'));
+}
