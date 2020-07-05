@@ -59,7 +59,7 @@ function toggle() {
 			selection: current,
 			replacement: nextCase(selectedText.trim().replace(/^[0-9]/, ''))
 		});
-	})
+	});
 
 	editor.edit(builder => {
 		changes.forEach(({ selection, replacement }) => {
@@ -76,8 +76,8 @@ function isSnakeCase(string: string) { return snakeCase(string) === string; }
 // 3. snake_case -> kebab-case
 // 4. kebab-case -> camelCase
 function nextCase(value: string) {
-	if (isCamelCase(value)) return snakeCase(value);
-	if (isSnakeCase(value)) return kebabCase(value);
+	if (isCamelCase(value)) {return snakeCase(value);}
+	if (isSnakeCase(value)) {return kebabCase(value);}
 	// nocase or kebab-case
 	return camelCase(value);
 }
