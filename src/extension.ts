@@ -21,14 +21,15 @@ export function deactivate() {
 }
 
 function toggle() {
-	let editor = window.activeTextEditor;
-	let document = editor?.document;
+	const editor = window.activeTextEditor;
+	const document = editor?.document;
 	const pattern = getPattern(editor);
 	const changes: { selection: Selection, replacement: string }[] = [];
 
 	editor?.selections.forEach(selection => {
 		let current = selection;
 		let selectedText = document.getText(selection) || '';
+
 		if (!selectedText) {
 			// there is no text selected, only the caret
 			const lineAt = document.lineAt(selection.start.line);
@@ -37,7 +38,6 @@ function toggle() {
 			// collect characters on the left side of the caret
 			while (leftPosition >= 0 && pattern.test(text[leftPosition])) {
 				selectedText = `${text[leftPosition] || ''}${selectedText}`;
-				console.log('selectedText', selectedText);
 				leftPosition -= 1;
 			}
 			// collect characters on the right side of the caret
